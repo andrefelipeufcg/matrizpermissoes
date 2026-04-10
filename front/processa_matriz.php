@@ -190,6 +190,60 @@ echo "<div style='display: flex; justify-content: space-between; align-items: ce
     echo "</div>";
 echo "</div>";
 
+// --- PAINEL DE FILTROS DINÂMICOS ---
+echo "<div style='margin-bottom: 15px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;'>";
+
+// O Botão de Toggle
+echo "<div id='btn-toggle-filtro' style='cursor: pointer; text-align: center; color: #1d5ea3; font-weight: bold; font-size: 14px; padding: 5px;'>";
+echo "<i class='fas fa-filter'></i> Ocultar/Mostrar Colunas (Filtro Visual) <i class='fas fa-caret-down'></i>";
+echo "</div>";
+
+// O Conteúdo do Filtro (oculto por padrão)
+echo "<div id='conteudo-filtro' style='display: none; border-top: 1px solid #ccc; margin-top: 10px; padding-top: 15px;'>";
+echo "<div style='display: flex; gap: 20px; flex-wrap: wrap;'>";
+
+$col_index = 4; // As 4 primeiras colunas são fixas (0 a 3)
+
+// Caixa de Filtros de Perfis
+echo "<div style='flex: 1; min-width: 250px; text-align: left;'>";
+echo "<div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;'>";
+echo "<strong style='color: #555;'>Perfis:</strong>";
+echo "<div style='font-size: 12px;'>";
+echo "<a href='#' class='acao-massa-perfil' data-acao='marcar' style='color: #1d5ea3; text-decoration: none;'>Marcar Todos</a> | ";
+echo "<a href='#' class='acao-massa-perfil' data-acao='desmarcar' style='color: #990000; text-decoration: none;'>Desmarcar Todos</a>";
+echo "</div></div>";
+
+echo "<div id='caixa-perfis' style='max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #fff; border-radius: 3px;'>";
+foreach ($nomes_perfis as $p) {
+    echo "<label style='display: block; margin-bottom: 4px; cursor: pointer; font-size: 13px; text-align: left;'>";
+    echo "<input type='checkbox' class='col-filter' data-colindex='$col_index' checked style='margin-right: 5px;'> $p";
+    echo "</label>";
+    $col_index++;
+}
+echo "</div></div>";
+
+// Caixa de Filtros de Grupos
+echo "<div style='flex: 1; min-width: 250px; text-align: left;'>";
+echo "<div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;'>";
+echo "<strong style='color: #555;'>Grupos:</strong>";
+echo "<div style='font-size: 12px;'>";
+echo "<a href='#' class='acao-massa-grupo' data-acao='marcar' style='color: #1d5ea3; text-decoration: none;'>Marcar Todos</a> | ";
+echo "<a href='#' class='acao-massa-grupo' data-acao='desmarcar' style='color: #990000; text-decoration: none;'>Desmarcar Todos</a>";
+echo "</div></div>";
+
+echo "<div id='caixa-grupos' style='max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #fff; border-radius: 3px;'>";
+foreach ($nomes_grupos as $g) {
+    echo "<label style='display: block; margin-bottom: 4px; cursor: pointer; font-size: 13px; text-align: left;'>";
+    echo "<input type='checkbox' class='col-filter' data-colindex='$col_index' checked style='margin-right: 5px;'> $g";
+    echo "</label>";
+    $col_index++;
+}
+echo "</div></div>";
+
+echo "</div>"; // Fim do flex container
+echo "</div>"; // Fim do conteudo-filtro
+echo "</div>"; // Fim do painel principal
+
 // A Tabela
 // DICA DE OURO: border-collapse: separate garante que as colunas sticky não percam as bordas
 echo "<div style='overflow-x: auto; max-height: 70vh; box-shadow: 0 0 5px rgba(0,0,0,0.1);'>";
@@ -236,23 +290,85 @@ echo "</table>";
 echo "</div>"; 
 echo "</div>";
 
-// --- SCRIPT DE CÁLCULO DINÂMICO DE LARGURA ---
+// --- SCRIPT DE CÁLCULO DINÂMICO E FILTROS ---
 echo "<script type='text/javascript'>
 $(document).ready(function() {
     var leftPositions = [];
     var currentLeft = 0;
     
-    // 1. Lê a largura exata de cada cabeçalho fixado renderizado no navegador
+    // 1. Lê a largura exata de cada cabeçalho fixado
     $('.headerRow th.freeze-col').each(function() {
         leftPositions.push(currentLeft);
         currentLeft += $(this).outerWidth();
     });
 
-    // 2. Aplica a distância 'left' correta para cada célula, empilhando-as lado a lado
+    // 2. Aplica a distância 'left' correta para cada célula
     $('.freeze-col').each(function() {
         var index = $(this).data('colindex');
         $(this).css('left', leftPositions[index] + 'px');
     });
+
+    // 3. FILTRO INSTANTÂNEO (COLUNAS E LINHAS)
+    $('.col-filter').on('change', function() {
+        // A. Esconde ou mostra a coluna inteira
+        var colIndex = $(this).data('colindex');
+        var isVisible = $(this).is(':checked');
+        var nth = colIndex + 1; 
+        
+        if (isVisible) {
+            $('.tab_cadre_fixehov tr').find('th:nth-child(' + nth + '), td:nth-child(' + nth + ')').show();
+        } else {
+            $('.tab_cadre_fixehov tr').find('th:nth-child(' + nth + '), td:nth-child(' + nth + ')').hide();
+        }
+
+        // B. Descobre quais colunas de perfil/grupo ainda estão ativadas no filtro
+        var colunasVisiveis = [];
+        $('.col-filter:checked').each(function() {
+            colunasVisiveis.push($(this).data('colindex') + 1);
+        });
+
+        // C. Varre todos os usuários. Se não tiver um 'X' visível, esconde a pessoa.
+        $('.tab_cadre_fixehov tr.tab_bg_1').each(function() {
+            var $linha = $(this);
+            var linhaTemX = false;
+
+            if (colunasVisiveis.length > 0) {
+                for (var i = 0; i < colunasVisiveis.length; i++) {
+                    var textoCelula = $linha.find('td:nth-child(' + colunasVisiveis[i] + ')').text().trim();
+                    if (textoCelula === 'X') {
+                        linhaTemX = true;
+                        break; 
+                    }
+                }
+            }
+
+            if (linhaTemX) {
+                $linha.show();
+            } else {
+                $linha.hide();
+            }
+        });
+    });
+
+    // Efeito de abrir e fechar a caixa de filtros
+    $('#btn-toggle-filtro').on('click', function() {
+        $('#conteudo-filtro').slideToggle('fast');
+    });
+
+    // Marcar/Desmarcar todos os Perfis
+    $('.acao-massa-perfil').on('click', function(e) {
+        e.preventDefault(); // Impede a tela de pular pro topo
+        var marcar = $(this).data('acao') === 'marcar';
+        $('#caixa-perfis .col-filter').prop('checked', marcar).trigger('change');
+    });
+
+    // Marcar/Desmarcar todos os Grupos
+    $('.acao-massa-grupo').on('click', function(e) {
+        e.preventDefault();
+        var marcar = $(this).data('acao') === 'marcar';
+        $('#caixa-grupos .col-filter').prop('checked', marcar).trigger('change');
+    });
+
 });
 </script>";
 

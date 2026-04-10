@@ -1,8 +1,8 @@
-# Plugin GLPI - Matriz de Permissões (UFCG)
+# Plugin GLPI - Matriz de Permissões
 
 Um plugin nativo para o GLPI (compatível com as versões 10 e 11) que gera uma visualização rápida e exportável das permissões dos usuários, cruzando Perfis e Grupos de acordo com as Entidades selecionadas.
 
-Desenvolvido para facilitar a auditoria de acessos e a extração de relatórios estruturados dentro do ambiente da Universidade Federal de Campina Grande (UFCG).
+Desenvolvido para facilitar a auditoria de acessos e a extração de relatórios estruturados.
 
 ## ✨ Funcionalidades
 

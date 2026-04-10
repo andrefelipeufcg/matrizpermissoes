@@ -107,6 +107,20 @@ uasort($mapa_usuarios, function($a, $b) {
 // 5. MODO EXPORTAÇÃO (Se o botão de Download foi clicado)
 // =========================================================
 if ($is_export) {
+    // O PHP lê os filtros que o JS enviou e descarta as colunas não selecionadas
+    if (isset($_POST['perfis_ativos']) && $_POST['perfis_ativos'] !== '') {
+        $perfis_ativos = json_decode($_POST['perfis_ativos'], true);
+        if (is_array($perfis_ativos)) {
+            $nomes_perfis = array_intersect($nomes_perfis, $perfis_ativos);
+        }
+    }
+    if (isset($_POST['grupos_ativos']) && $_POST['grupos_ativos'] !== '') {
+        $grupos_ativos = json_decode($_POST['grupos_ativos'], true);
+        if (is_array($grupos_ativos)) {
+            $nomes_grupos = array_intersect($nomes_grupos, $grupos_ativos);
+        }
+    }
+
     $nome_arquivo = "matriz_permissoes_" . date("Ymd_His") . ".csv";
     header('Content-Type: text/csv; charset=UTF-8');
     header('Content-Disposition: attachment; filename="' . $nome_arquivo . '"');
@@ -120,10 +134,24 @@ if ($is_export) {
     fputcsv($output, $cabecalho, ';'); 
 
     foreach ($mapa_usuarios as $uid => $dados) {
-        $linha = [$dados['ativo'] ?? 'Não', $dados['login'] ?? '', $dados['firstname'] ?? '', $dados['realname'] ?? ''];
-        foreach ($nomes_perfis as $p) $linha[] = isset($dados['perfis'][$p]) ? 'X' : '';
-        foreach ($nomes_grupos as $g) $linha[] = isset($dados['grupos'][$g]) ? 'X' : '';
-        fputcsv($output, $linha, ';');
+        // Verifica se o usuário tem X em ALGUMA das colunas que sobraram ativas no filtro
+        $tem_x = false;
+        foreach ($nomes_perfis as $p) {
+            if (isset($dados['perfis'][$p])) { $tem_x = true; break; }
+        }
+        if (!$tem_x) {
+            foreach ($nomes_grupos as $g) {
+                if (isset($dados['grupos'][$g])) { $tem_x = true; break; }
+            }
+        }
+
+        // Se a pessoa não tem 'X' nas colunas selecionadas, a linha não vai para o CSV
+        if ($tem_x) {
+            $linha = [$dados['ativo'] ?? 'Não', $dados['login'] ?? '', $dados['firstname'] ?? '', $dados['realname'] ?? ''];
+            foreach ($nomes_perfis as $p) $linha[] = isset($dados['perfis'][$p]) ? 'X' : '';
+            foreach ($nomes_grupos as $g) $linha[] = isset($dados['grupos'][$g]) ? 'X' : '';
+            fputcsv($output, $linha, ';');
+        }
     }
     fclose($output);
     exit;
@@ -143,8 +171,7 @@ echo "<style>
         z-index: 2; /* Acima dos dados comuns da tabela */
         background-color: #f4f4f4;
     }
-    
-    /* 2. NOVA MÁGICA: Linha de cabeçalhos travada no topo */
+    /* 2. Linha de cabeçalhos travada no topo */
     .headerRow th {
         position: -webkit-sticky;
         position: sticky;
@@ -152,14 +179,13 @@ echo "<style>
         z-index: 3; /* Acima dos dados rolando para cima */
         box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2); /* Sombrinha embaixo da linha */
     }
-    
     /* 3. O Cruzamento Exato (Canto superior esquerdo) precisa ser o maior de todos */
     .headerRow th.freeze-col {
         z-index: 4; /* Fica acima das colunas (z:2) e da linha de cabeçalho (z:3) */
         background-color: #e0e0e0; 
         color: #333;
     }
-    
+
     /* 4. Sombra lateral */
     .freeze-shadow {
         border-right: 1px solid #999;
@@ -180,11 +206,15 @@ echo "<div style='display: flex; justify-content: space-between; align-items: ce
     echo "<div style='display: flex; gap: 10px;'>";
         echo "<a href='matriz.php' class='vsubmit' style='background-color: #555555; text-decoration: none; padding: 5px 15px; display: inline-flex; align-items: center;' title='Voltar para a seleção de entidades'>⬅️ Voltar</a>";
 
-        echo "<form method='post' action='processa_matriz.php' style='margin: 0;'>";
-            // CORREÇÃO: Usando a forma correta para o GLPI 11
+        echo "<form id='form-exportar' method='post' action='processa_matriz.php' style='margin: 0;'>";
             echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSRFToken() . "'>";
             echo "<input type='hidden' name='entities_id_profiles' value='$entidade_perfis'>";
             echo "<input type='hidden' name='entities_id_groups' value='$entidade_grupos'>";
+            
+            // ESSES SÃO OS CAMPOS ESCONDIDOS QUE O JS VAI PREENCHER
+            echo "<input type='hidden' name='perfis_ativos' id='input_perfis_ativos' value=''>";
+            echo "<input type='hidden' name='grupos_ativos' id='input_grupos_ativos' value=''>";
+            
             echo "<button type='submit' name='exportar_csv' value='1' class='vsubmit' style='background-color: #2e7d32;' title='Fazer o download da tabela em formato CSV'>📥 Exportar para CSV</button>";
         echo "</form>";
     echo "</div>";
@@ -215,8 +245,9 @@ echo "</div></div>";
 
 echo "<div id='caixa-perfis' style='max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #fff; border-radius: 3px;'>";
 foreach ($nomes_perfis as $p) {
+    $val = htmlspecialchars($p, ENT_QUOTES);
     echo "<label style='display: block; margin-bottom: 4px; cursor: pointer; font-size: 13px; text-align: left;'>";
-    echo "<input type='checkbox' class='col-filter' data-colindex='$col_index' checked style='margin-right: 5px;'> $p";
+    echo "<input type='checkbox' class='col-filter' data-colindex='$col_index' value='$val' checked style='margin-right: 5px;'> $p";
     echo "</label>";
     $col_index++;
 }
@@ -233,25 +264,23 @@ echo "</div></div>";
 
 echo "<div id='caixa-grupos' style='max-height: 120px; overflow-y: auto; border: 1px solid #ccc; padding: 8px; background: #fff; border-radius: 3px;'>";
 foreach ($nomes_grupos as $g) {
+    $val = htmlspecialchars($g, ENT_QUOTES);
     echo "<label style='display: block; margin-bottom: 4px; cursor: pointer; font-size: 13px; text-align: left;'>";
-    echo "<input type='checkbox' class='col-filter' data-colindex='$col_index' checked style='margin-right: 5px;'> $g";
+    echo "<input type='checkbox' class='col-filter' data-colindex='$col_index' value='$val' checked style='margin-right: 5px;'> $g";
     echo "</label>";
     $col_index++;
 }
 echo "</div></div>";
 
-echo "</div>"; // Fim do flex container
-echo "</div>"; // Fim do conteudo-filtro
-echo "</div>"; // Fim do painel principal
+echo "</div>"; 
+echo "</div>"; 
+echo "</div>";
 
 // A Tabela
-// DICA DE OURO: border-collapse: separate garante que as colunas sticky não percam as bordas
 echo "<div style='overflow-x: auto; max-height: 70vh; box-shadow: 0 0 5px rgba(0,0,0,0.1);'>";
 echo "<table class='tab_cadre_fixehov' style='margin: 0; width: 100%; border-collapse: separate; border-spacing: 0;'>";
 
-// Cabeçalhos
 echo "<tr class='headerRow'>";
-// Aplicando a classe freeze e marcando o índice da coluna
 echo "<th class='freeze-col' data-colindex='0'>Ativo</th>";
 echo "<th class='freeze-col' data-colindex='1'>Usuário</th>";
 echo "<th class='freeze-col' data-colindex='2'>Nome</th>";
@@ -261,13 +290,11 @@ foreach ($nomes_perfis as $p) echo "<th style='background-color: #999999; color:
 foreach ($nomes_grupos as $g) echo "<th style='background-color: #0b5394; color: white; white-space: nowrap;'>$g</th>";
 echo "</tr>";
 
-// Linhas de Dados
 foreach ($mapa_usuarios as $uid => $dados) {
     echo "<tr class='tab_bg_1'>";
     
     $cor_ativo = ($dados['ativo'] === 'Sim') ? 'color: #274e13; font-weight: bold;' : 'color: #990000;';
 
-    // Travando as 4 primeiras colunas com os mesmos índices dos cabeçalhos
     echo "<td class='center freeze-col' data-colindex='0' style='$cor_ativo'>" . ($dados['ativo'] ?? 'Não') . "</td>";
     echo "<td class='freeze-col' data-colindex='1' style='white-space: nowrap;'>" . ($dados['login'] ?? '') . "</td>";
     echo "<td class='freeze-col' data-colindex='2' style='white-space: nowrap;'>" . ($dados['firstname'] ?? '') . "</td>";
@@ -296,21 +323,35 @@ $(document).ready(function() {
     var leftPositions = [];
     var currentLeft = 0;
     
-    // 1. Lê a largura exata de cada cabeçalho fixado
     $('.headerRow th.freeze-col').each(function() {
         leftPositions.push(currentLeft);
         currentLeft += $(this).outerWidth();
     });
 
-    // 2. Aplica a distância 'left' correta para cada célula
     $('.freeze-col').each(function() {
         var index = $(this).data('colindex');
         $(this).css('left', leftPositions[index] + 'px');
     });
 
-    // 3. FILTRO INSTANTÂNEO (COLUNAS E LINHAS)
+    // FUNÇÃO QUE ALIMENTA OS CAMPOS OCULTOS PARA A EXPORTAÇÃO
+    function atualizaInputsExportacao() {
+        var perfis = [];
+        $('#caixa-perfis .col-filter:checked').each(function() {
+            perfis.push($(this).val());
+        });
+        $('#input_perfis_ativos').val(JSON.stringify(perfis));
+
+        var grupos = [];
+        $('#caixa-grupos .col-filter:checked').each(function() {
+            grupos.push($(this).val());
+        });
+        $('#input_grupos_ativos').val(JSON.stringify(grupos));
+    }
+
+    // Inicializa a exportação com todos marcados logo ao carregar a tela
+    atualizaInputsExportacao();
+
     $('.col-filter').on('change', function() {
-        // A. Esconde ou mostra a coluna inteira
         var colIndex = $(this).data('colindex');
         var isVisible = $(this).is(':checked');
         var nth = colIndex + 1; 
@@ -321,13 +362,11 @@ $(document).ready(function() {
             $('.tab_cadre_fixehov tr').find('th:nth-child(' + nth + '), td:nth-child(' + nth + ')').hide();
         }
 
-        // B. Descobre quais colunas de perfil/grupo ainda estão ativadas no filtro
         var colunasVisiveis = [];
         $('.col-filter:checked').each(function() {
             colunasVisiveis.push($(this).data('colindex') + 1);
         });
 
-        // C. Varre todos os usuários. Se não tiver um 'X' visível, esconde a pessoa.
         $('.tab_cadre_fixehov tr.tab_bg_1').each(function() {
             var $linha = $(this);
             var linhaTemX = false;
@@ -348,21 +387,21 @@ $(document).ready(function() {
                 $linha.hide();
             }
         });
+
+        // Toda vez que esconde ou mostra uma coluna, atualiza os campos de exportação CSV
+        atualizaInputsExportacao();
     });
 
-    // Efeito de abrir e fechar a caixa de filtros
     $('#btn-toggle-filtro').on('click', function() {
         $('#conteudo-filtro').slideToggle('fast');
     });
 
-    // Marcar/Desmarcar todos os Perfis
     $('.acao-massa-perfil').on('click', function(e) {
-        e.preventDefault(); // Impede a tela de pular pro topo
+        e.preventDefault(); 
         var marcar = $(this).data('acao') === 'marcar';
         $('#caixa-perfis .col-filter').prop('checked', marcar).trigger('change');
     });
 
-    // Marcar/Desmarcar todos os Grupos
     $('.acao-massa-grupo').on('click', function(e) {
         e.preventDefault();
         var marcar = $(this).data('acao') === 'marcar';

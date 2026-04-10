@@ -96,6 +96,13 @@ if (!empty($mapa_usuarios)) {
     }
 }
 
+// Ordenar os usuários em ordem alfabética (Nome + Sobrenome)
+uasort($mapa_usuarios, function($a, $b) {
+    $nomeA = strtolower(trim(($a['firstname'] ?? '') . ' ' . ($a['realname'] ?? '')));
+    $nomeB = strtolower(trim(($b['firstname'] ?? '') . ' ' . ($b['realname'] ?? '')));
+    return strcmp($nomeA, $nomeB);
+});
+
 // =========================================================
 // 5. MODO EXPORTAÇÃO (Se o botão de Download foi clicado)
 // =========================================================

@@ -14,7 +14,7 @@ echo "<div class='center' style='margin-top: 20px;'>";
 echo "<table class='tab_cadre_fixe'>";
 
 // Título do quadro
-echo "<tr><th colspan='2'>Gerador de Matriz de Permissões (UFCG)</th></tr>";
+echo "<tr><th colspan='2'>Gerador de Matriz de Permissões</th></tr>";
 
 // Formulário que vai enviar os dados para o motor de processamento
 echo "<form method='post' action='processa_matriz.php'>";

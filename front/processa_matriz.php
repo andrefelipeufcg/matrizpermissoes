@@ -185,7 +185,6 @@ echo "<style>
         background-color: #e0e0e0; 
         color: #333;
     }
-
     /* 4. Sombra lateral */
     .freeze-shadow {
         border-right: 1px solid #999;
@@ -272,15 +271,18 @@ foreach ($nomes_grupos as $g) {
 }
 echo "</div></div>";
 
-echo "</div>"; 
-echo "</div>"; 
-echo "</div>";
+echo "</div>"; // Fim do flex container
+echo "</div>"; // Fim do conteudo-filtro
+echo "</div>"; // Fim do painel principal
 
 // A Tabela
+// DICA DE OURO: border-collapse: separate garante que as colunas sticky não percam as bordas
 echo "<div style='overflow-x: auto; max-height: 70vh; box-shadow: 0 0 5px rgba(0,0,0,0.1);'>";
 echo "<table class='tab_cadre_fixehov' style='margin: 0; width: 100%; border-collapse: separate; border-spacing: 0;'>";
 
+// Cabeçalhos
 echo "<tr class='headerRow'>";
+// Aplicando a classe freeze e marcando o índice da coluna
 echo "<th class='freeze-col' data-colindex='0'>Ativo</th>";
 echo "<th class='freeze-col' data-colindex='1'>Usuário</th>";
 echo "<th class='freeze-col' data-colindex='2'>Nome</th>";
@@ -290,11 +292,13 @@ foreach ($nomes_perfis as $p) echo "<th style='background-color: #999999; color:
 foreach ($nomes_grupos as $g) echo "<th style='background-color: #0b5394; color: white; white-space: nowrap;'>$g</th>";
 echo "</tr>";
 
+// Linhas de Dados
 foreach ($mapa_usuarios as $uid => $dados) {
     echo "<tr class='tab_bg_1'>";
     
     $cor_ativo = ($dados['ativo'] === 'Sim') ? 'color: #274e13; font-weight: bold;' : 'color: #990000;';
 
+    // Travando as 4 primeiras colunas com os mesmos índices dos cabeçalhos
     echo "<td class='center freeze-col' data-colindex='0' style='$cor_ativo'>" . ($dados['ativo'] ?? 'Não') . "</td>";
     echo "<td class='freeze-col' data-colindex='1' style='white-space: nowrap;'>" . ($dados['login'] ?? '') . "</td>";
     echo "<td class='freeze-col' data-colindex='2' style='white-space: nowrap;'>" . ($dados['firstname'] ?? '') . "</td>";
@@ -323,11 +327,13 @@ $(document).ready(function() {
     var leftPositions = [];
     var currentLeft = 0;
     
+    // 1. Lê a largura exata de cada cabeçalho fixado
     $('.headerRow th.freeze-col').each(function() {
         leftPositions.push(currentLeft);
         currentLeft += $(this).outerWidth();
     });
 
+    // 2. Aplica a distância 'left' correta para cada célula
     $('.freeze-col').each(function() {
         var index = $(this).data('colindex');
         $(this).css('left', leftPositions[index] + 'px');
@@ -351,7 +357,9 @@ $(document).ready(function() {
     // Inicializa a exportação com todos marcados logo ao carregar a tela
     atualizaInputsExportacao();
 
+    // 3. FILTRO INSTANTÂNEO (COLUNAS E LINHAS)
     $('.col-filter').on('change', function() {
+        // A. Esconde ou mostra a coluna inteira
         var colIndex = $(this).data('colindex');
         var isVisible = $(this).is(':checked');
         var nth = colIndex + 1; 
@@ -362,11 +370,13 @@ $(document).ready(function() {
             $('.tab_cadre_fixehov tr').find('th:nth-child(' + nth + '), td:nth-child(' + nth + ')').hide();
         }
 
+        // B. Descobre quais colunas de perfil/grupo ainda estão ativadas no filtro
         var colunasVisiveis = [];
         $('.col-filter:checked').each(function() {
             colunasVisiveis.push($(this).data('colindex') + 1);
         });
 
+        // C. Varre todos os usuários. Se não tiver um 'X' visível, esconde a pessoa.
         $('.tab_cadre_fixehov tr.tab_bg_1').each(function() {
             var $linha = $(this);
             var linhaTemX = false;
@@ -392,18 +402,21 @@ $(document).ready(function() {
         atualizaInputsExportacao();
     });
 
+    // Efeito de abrir e fechar a caixa de filtros
     $('#btn-toggle-filtro').on('click', function() {
         $('#conteudo-filtro').slideToggle('fast');
     });
 
+    // Marcar/Desmarcar todos os Perfis
     $('.acao-massa-perfil').on('click', function(e) {
         e.preventDefault(); 
         var marcar = $(this).data('acao') === 'marcar';
         $('#caixa-perfis .col-filter').prop('checked', marcar).trigger('change');
     });
 
+    // Marcar/Desmarcar todos os Grupos
     $('.acao-massa-grupo').on('click', function(e) {
-        e.preventDefault();
+        e.preventDefault(); // Impede a tela de pular pro topo
         var marcar = $(this).data('acao') === 'marcar';
         $('#caixa-grupos .col-filter').prop('checked', marcar).trigger('change');
     });

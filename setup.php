@@ -18,7 +18,7 @@ function plugin_version_matrizpermissoes() {
         'version'        => '1.0.0',
         'author'         => 'andrefelipeufcg',
         'license'        => 'GPLv2+',
-        'homepage'       => 'https://sti.ufcg.edu.br',
+        'homepage'       => 'https://github.com/andrefelipeufcg/matrizpermissoes',
         'minGlpiVersion' => '10.0.0' // Funciona para a v10 e v11
     ];
 }

@@ -6,6 +6,7 @@
  */
 function plugin_init_matrizpermissoes() {
     global $PLUGIN_HOOKS;
+    $PLUGIN_HOOKS["csrf_compliant"]["matrizpermissoes"] = true;
     $PLUGIN_HOOKS['menu_toadd']['matrizpermissoes'] = ['tools' => 'PluginMatrizpermissoesMatriz'];
 }
 

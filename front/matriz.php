@@ -2,8 +2,9 @@
 // 1. Inicializa o ambiente do GLPI (obrigatório em todos os arquivos 'front')
 include ("../../../inc/includes.php");
 
-// 2. Trava de segurança: Garante que só quem está logado pode acessar
+// 2. Trava de segurança: Garante que só quem está logado e quem tem permissão pode acessar
 Session::checkLoginUser();
+Session::checkRight('plugin_matrizpermissoes', READ);
 
 // 3. Renderiza o cabeçalho nativo do GLPI
 // Parâmetros: Título da aba, Caminho atual, Menu principal (Ferramentas), Nome do Plugin
@@ -26,7 +27,7 @@ echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSR
 echo "<tr class='tab_bg_1'>";
 echo "<td width='30%'><strong>1. Entidade dos Perfis:</strong></td>";
 echo "<td>";
-// A mágica acontece aqui: Essa linha cria aquele Select com pesquisa (Select2)
+// Essa linha cria o Select com pesquisa (Select2)
 // que já puxa todas as entidades do banco de dados automaticamente!
 Entity::dropdown([
     'name' => 'entities_id_profiles', 
@@ -49,7 +50,7 @@ echo "</tr>";
 // --- BOTÃO DE SUBMIT ---
 echo "<tr class='tab_bg_2'>";
 echo "<td colspan='2' class='center'>";
-echo "<button type='submit' name='gerar_matriz' class='vsubmit'>Gerar Matriz Completa</button>";
+echo "<button type='submit' name='gerar_matriz' class='vsubmit'>Gerar Matriz de Permissões</button>";
 echo "</td>";
 echo "</tr>";
 
@@ -66,7 +67,7 @@ $(document).ready(function() {
     \$selectPerfil.on('change', function() {
         var valorSelecionado = $(this).val();
         
-        // A mágica: Em vez de buscar no HTML, buscamos o texto direto na memória do Select2
+        // Em vez de buscar no HTML, buscamos o texto direto na memória do Select2
         var dadosSelect2 = $(this).select2('data');
         var textoSelecionado = (dadosSelect2 && dadosSelect2.length > 0) ? dadosSelect2[0].text : '';
         

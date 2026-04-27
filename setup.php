@@ -8,6 +8,7 @@ function plugin_init_matrizpermissoes() {
     global $PLUGIN_HOOKS;
     $PLUGIN_HOOKS["csrf_compliant"]["matrizpermissoes"] = true;
     $PLUGIN_HOOKS['menu_toadd']['matrizpermissoes'] = ['tools' => 'PluginMatrizpermissoesMatriz'];
+    Plugin::registerClass('PluginMatrizpermissoesProfile', ['addtabon' => 'Profile']);
 }
 
 /**
@@ -16,7 +17,7 @@ function plugin_init_matrizpermissoes() {
 function plugin_version_matrizpermissoes() {
     return [
         'name'           => 'Matriz de Permissões',
-        'version'        => '1.0.0',
+        'version'        => '1.1.0',
         'author'         => 'andrefelipeufcg',
         'license'        => 'GPLv2+',
         'homepage'       => 'https://github.com/andrefelipeufcg/matrizpermissoes',

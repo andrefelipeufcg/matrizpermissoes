@@ -37,6 +37,11 @@ class PluginMatrizpermissoesMatriz extends CommonGLPI {
      * Constrói o conteúdo do menu, indicando para qual página ele aponta
      */
     static function getMenuContent() {
+        // Se o perfil logado NÃO tiver permissão, aborta a criação do botão
+        if (!self::canView()) {
+            return false;
+        }
+        
         return [
             'title' => self::getMenuName(),
             'page'  => '/plugins/matrizpermissoes/front/matriz.php',
@@ -49,7 +54,9 @@ class PluginMatrizpermissoesMatriz extends CommonGLPI {
      * Define quem pode ver este botão no menu.
      * CORREÇÃO: Adicionado o ": bool" exigido pelo PHP 8 / GLPI 11
      */
+    #[\ReturnTypeWillChange]
     public static function canView(): bool {
-        return true; 
+        // Agora o GLPI só exibe o menu se o perfil tiver a permissão 1 (READ)
+        return Session::haveRight('plugin_matrizpermissoes', READ);
     }
 }

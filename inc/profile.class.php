@@ -40,8 +40,17 @@ class PluginMatrizpermissoesProfile extends CommonGLPI {
         
         echo "<div class='center'><table class='tab_cadre_fixehov'>";
         echo "<tr class='tab_bg_1'><th colspan='2'>Configuração de Acesso ao Plugin</th></tr>";
-        echo "<tr class='tab_bg_2'><td class='center'>Pode visualizar a matriz de permissões?</td>";
-        echo "<td class='center'><input type='checkbox' name='matriz_read' value='1' ".($current_right ? "checked" : "")."></td></tr>";
+        echo "<tr class='tab_bg_2'>";
+        echo "<td class='center' style='width: 50%;'>Pode visualizar a matriz de permissões?</td>";
+        echo "<td class='center'>";
+        echo "<label style='margin-right: 20px; cursor: pointer;'>";
+        echo "<input type='radio' name='matriz_read' value='1' " . ($current_right ? "checked" : "") . "> Sim";
+        echo "</label>";
+        echo "<label style='cursor: pointer;'>";
+        echo "<input type='radio' name='matriz_read' value='0' " . (!$current_right ? "checked" : "") . "> Não";
+        echo "</label>";
+        echo "</td>";
+        echo "</tr>";
         
         echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
         echo Html::submit('Salvar', ['name' => 'update', 'class' => 'submit']);

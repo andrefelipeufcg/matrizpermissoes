@@ -27,7 +27,7 @@ echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSR
 echo "<tr class='tab_bg_1'>";
 echo "<td width='30%'><strong>1. Entidade dos Perfis:</strong></td>";
 echo "<td>";
-// Essa linha cria aquele Select com pesquisa (Select2)
+// Essa linha cria o Select com pesquisa (Select2)
 // que já puxa todas as entidades do banco de dados automaticamente!
 Entity::dropdown([
     'name' => 'entities_id_profiles', 
@@ -67,7 +67,7 @@ $(document).ready(function() {
     \$selectPerfil.on('change', function() {
         var valorSelecionado = $(this).val();
         
-        // A mágica: Em vez de buscar no HTML, buscamos o texto direto na memória do Select2
+        // Em vez de buscar no HTML, buscamos o texto direto na memória do Select2
         var dadosSelect2 = $(this).select2('data');
         var textoSelecionado = (dadosSelect2 && dadosSelect2.length > 0) ? dadosSelect2[0].text : '';
         

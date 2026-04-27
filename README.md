@@ -7,6 +7,8 @@ Desenvolvido para facilitar a auditoria de acessos e a extração de relatórios
 ## ✨ Funcionalidades
 
 * **Geração de Matriz Visual:** Tabela dinâmica que exibe os usuários ativos/inativos e marca com um "X" os seus respectivos perfis e grupos.
+* **Filtros Visuais Dinâmicos:** Possibilidade de ocultar/mostrar colunas específicas (perfis e grupos) diretamente na tela.
+* **Controle de Acesso Nativo (RBAC):** Integrado nativamente à tela de Perfis do GLPI, permitindo definir exatamente quem tem o direito de visualizar a ferramenta.
 * **Filtro Inteligente por Entidade:** Campos de seleção integrados com a API do Select2 nativa do GLPI. Ao selecionar a entidade do perfil, a entidade do grupo é sincronizada automaticamente.
 * **UX Avançada (Sticky Columns):** Congelamento dinâmico da linha de cabeçalho e das colunas de identificação do usuário (Ativo, Usuário, Nome, Sobrenome), permitindo rolar matrizes extensas sem perder a referência.
 * **Exportação para CSV:** Download da matriz gerada em formato `.csv` (codificação UTF-8) com um único clique, pronta para ser aberta no Excel ou planilhas.
@@ -14,7 +16,7 @@ Desenvolvido para facilitar a auditoria de acessos e a extração de relatórios
 
 ## 📋 Pré-requisitos
 
-* **GLPI:** Versão 10.0.0 ou superior (Testado e homologado no GLPI 11).
+* **GLPI:** Versão 10.0.0 ou superior.
 * **PHP:** Versão 8.0 ou superior.
 * Acesso ao servidor web (terminal SSH) para ajuste de permissões.
 
@@ -25,6 +27,7 @@ Desenvolvido para facilitar a auditoria de acessos e a extração de relatórios
 3. Envie a pasta para o diretório de plugins do seu servidor GLPI:
    ```bash
    /var/www/seu_glpi/plugins/matrizpermissoes
+   ```
 
 4. **Ajuste as permissões no servidor (Importante):**
    O servidor web precisa ter permissão de leitura para compilar o Autoloader. Acesse seu terminal e execute:
@@ -45,19 +48,33 @@ Desenvolvido para facilitar a auditoria de acessos e a extração de relatórios
    * Navegue até **Configurar > Plugins**.
    * Localize o "Matriz de Permissões", clique em **Instalar** e, em seguida, em **Habilitar**.
 
+## 🔒 Controle de Acesso (Permissões)
+
+Por padrão, logo após a instalação, **todos os perfis existentes** recebem permissão automática para visualizar a Matriz de Permissões. O bloqueio funciona por exceção. 
+
+Caso deseje que algum perfil específico **NÃO** tenha acesso à ferramenta:
+1. Navegue até **Administração > Perfis**.
+2. Clique no perfil que deseja restringir.
+3. No menu lateral, clique na aba **Matriz de Permissões**.
+4. Altere a opção para **Não** e clique em Salvar. 
+*(O menu "Ferramentas > Matriz de Permissões" deixará de ser exibido para os usuários daquele perfil).*
+
 ## 📖 Como Usar
 
-1. No menu superior escuro do GLPI, vá em **Ferramentas > Matriz de Permissões**.
+1. No menu do GLPI, vá em **Ferramentas > Matriz de Permissões**.
 2. Selecione a entidade desejada nos campos disponíveis.
-3. Clique em **Gerar Matriz Completa**.
-4. Visualize os dados em tela ou clique em **Exportar para CSV** para fazer o download.
+3. Clique em **Gerar Matriz de Permissões**.
+4. Utilize o botão **Ocultar/Mostrar Colunas (Filtro Visual)** para refinar a tabela na tela, se necessário.
+5. Visualize os dados em tela ou clique em **Exportar para CSV** para fazer o download.
 
 ## 🛠️ Estrutura de Diretórios
 
-* `setup.php` e `hook.php`: Inicialização e registros de hooks no ecossistema do GLPI.
-* `inc/matriz.class.php`: Classe de controle principal e renderização de menu.
-* `front/matriz.php`: Interface visual do gerador (seleção de entidades).
+* `setup.php` e `hook.php`: Inicialização e registros de hooks no ecossistema do GLPI, incluindo a injeção inicial de permissões no banco de dados.
+* `inc/matriz.class.php`: Classe de controle principal e renderização do menu superior.
+* `inc/profile.class.php`: Injeção da aba de configuração na tela nativa de Perfis.
+* `front/matriz.php`: Interface visual do gerador principal (seleção de entidades).
 * `front/processa_matriz.php`: Motor de busca no banco de dados, geração da tabela HTML com UX avançada e exportação CSV.
+* `front/profile.form.php`: Processador de salvamento das permissões.
 
 ## 📄 Licença
 

@@ -391,12 +391,12 @@ $(document).ready(function() {
 
         // C. Varre todos os usuários. Se não tiver um 'X' visível, esconde a pessoa.
         $('.tab_cadre_fixehov tr.tab_bg_1').each(function() {
-            var $linha = $(this);
+            var tr_linha = $(this);
             var linhaTemX = false;
 
             if (colunasVisiveis.length > 0) {
                 for (var i = 0; i < colunasVisiveis.length; i++) {
-                    var textoCelula = $linha.find('td:nth-child(' + colunasVisiveis[i] + ')').text().trim();
+                    var textoCelula = tr_linha.find('td:nth-child(' + colunasVisiveis[i] + ')').text().trim();
                     if (textoCelula === 'X') {
                         linhaTemX = true;
                         break; 
@@ -405,9 +405,9 @@ $(document).ready(function() {
             }
 
             if (linhaTemX) {
-                $linha.show();
+                tr_linha.show();
             } else {
-                $linha.hide();
+                tr_linha.hide();
             }
         });
 

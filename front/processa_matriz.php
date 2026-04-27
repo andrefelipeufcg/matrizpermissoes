@@ -207,8 +207,14 @@ echo "<div style='display: flex; justify-content: space-between; align-items: ce
 
         echo "<form id='form-exportar' method='post' action='processa_matriz.php' style='margin: 0;'>";
             echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSRFToken() . "'>";
-            echo "<input type='hidden' name='entities_id_profiles' value='$entidade_perfis'>";
-            echo "<input type='hidden' name='entities_id_groups' value='$entidade_grupos'>";
+            
+            // Loop para descompactar o Array corretamente e evitar Warnings do PHP 8
+            foreach ((array)$entidade_perfis as $id_perfil) {
+                echo "<input type='hidden' name='entities_id_profiles[]' value='" . htmlspecialchars($id_perfil, ENT_QUOTES) . "'>";
+            }
+            foreach ((array)$entidade_grupos as $id_grupo) {
+                echo "<input type='hidden' name='entities_id_groups[]' value='" . htmlspecialchars($id_grupo, ENT_QUOTES) . "'>";
+            }
             
             // ESSES SÃO OS CAMPOS ESCONDIDOS QUE O JS VAI PREENCHER
             echo "<input type='hidden' name='perfis_ativos' id='input_perfis_ativos' value=''>";

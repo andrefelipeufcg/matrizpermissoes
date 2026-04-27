@@ -1,11 +1,9 @@
 <?php
 include("../../../inc/includes.php");
 
-// Verifica se quem está salvando tem permissão nativa para editar Perfis
+// Verifica se está logado e se tem permissão de gerenciar perfis
+Session::checkLoginUser();
 Session::checkRight("profile", UPDATE);
-
-// Validação de segurança do GLPI 10/11
-Session::checkCSRF($_POST);
 
 global $DB;
 

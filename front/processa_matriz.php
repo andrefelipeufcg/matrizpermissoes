@@ -1,16 +1,23 @@
 <?php
+// Aumenta o limite de memória temporariamente para suportar entidades com milhares de usuários (Evita erro 500 no CSV)
+ini_set('memory_limit', '512M');
+
 include ("../../../inc/includes.php");
 Session::checkLoginUser();
 
-// Verifica se o formulário original ou o botão de exportar foram acionados
+// Verifica se o formulário original, o botão de exportar ou a paginação foram acionados
 if (!isset($_POST['gerar_matriz']) && !isset($_POST['exportar_csv'])) {
     Html::redirect("matriz.php");
     exit;
 }
 
 $is_export = isset($_POST['exportar_csv']);
-$entidade_perfis = $_POST['entities_id_profiles'];
-$entidade_grupos = $_POST['entities_id_groups'];
+$entidade_perfis = $_POST['entities_id_profiles'] ?? [];
+$entidade_grupos = $_POST['entities_id_groups'] ?? [];
+
+// Controle de Paginação
+$pagina_atual = isset($_POST['pagina']) ? max(1, intval($_POST['pagina'])) : 1;
+$limite_por_pagina = 100;
 
 global $DB;
 
@@ -103,6 +110,10 @@ uasort($mapa_usuarios, function($a, $b) {
     return strcmp($nomeA, $nomeB);
 });
 
+// Cálculos de Paginação
+$total_usuarios = count($mapa_usuarios);
+$total_paginas = ceil($total_usuarios / $limite_por_pagina);
+
 // =========================================================
 // 5. MODO EXPORTAÇÃO (Se o botão de Download foi clicado)
 // =========================================================
@@ -133,6 +144,7 @@ if ($is_export) {
     $cabecalho = array_merge(['Ativo', 'Usuário', 'Nome', 'Sobrenome'], $nomes_perfis, $nomes_grupos);
     fputcsv($output, $cabecalho, ';'); 
 
+    // O CSV continua exportando 100% da lista ($mapa_usuarios inteiro)
     foreach ($mapa_usuarios as $uid => $dados) {
         // Verifica se o usuário tem X em ALGUMA das colunas que sobraram ativas no filtro
         $tem_x = false;
@@ -190,6 +202,18 @@ echo "<style>
         border-right: 1px solid #999;
         box-shadow: 3px 0px 5px -1px rgba(0,0,0,0.2);
     }
+    .btn-paginacao { 
+        padding: 5px 15px; 
+        border-radius: 4px; 
+        color: white; 
+        text-decoration: none; 
+        font-weight: bold; 
+        cursor: pointer; 
+        border: none; 
+    }
+    .btn-paginacao:hover { 
+        opacity: 0.8; 
+    }
 </style>";
 
 echo "<div class='center' style='margin-top: 20px; width: 95%; margin-left: auto; margin-right: auto;'>";
@@ -224,6 +248,23 @@ echo "<div style='display: flex; justify-content: space-between; align-items: ce
         echo "</form>";
     echo "</div>";
 echo "</div>";
+
+// Controles de Paginação (Topo)
+if ($total_paginas > 1) {
+    echo "<div style='display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 15px; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd;'>";
+    if ($pagina_atual > 1) {
+        $prev = $pagina_atual - 1;
+        echo "<button onclick='irParaPagina($prev)' class='btn-paginacao' style='background-color: #1d5ea3;'><i class='fas fa-chevron-left'></i> Página Anterior</button>";
+    }
+    echo "<span style='font-size: 14px; color: #555;'>Exibindo página ";
+    echo "<input type='number' value='$pagina_atual' min='1' max='$total_paginas' style='width: 60px; text-align: center; padding: 3px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold;' onchange='pularParaPagina(this.value, $total_paginas)'> ";
+    echo "de <b>$total_paginas</b></span>";    
+    if ($pagina_atual < $total_paginas) {
+        $next = $pagina_atual + 1;
+        echo "<button onclick='irParaPagina($next)' class='btn-paginacao' style='background-color: #1d5ea3;'>Próxima Página <i class='fas fa-chevron-right'></i></button>";
+    }
+    echo "</div>";
+}
 
 // --- PAINEL DE FILTROS DINÂMICOS ---
 echo "<div style='margin-bottom: 15px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;'>";
@@ -283,6 +324,12 @@ echo "</div>"; // Fim do painel principal
 
 // A Tabela
 // DICA DE OURO: border-collapse: separate garante que as colunas sticky não percam as bordas
+// =========================================================
+// FATIAMENTO DA TELA (PAGINAÇÃO)
+// Só renderiza 100 usuários por vez no HTML para salvar memória!
+// =========================================================
+$usuarios_pagina = array_slice($mapa_usuarios, ($pagina_atual - 1) * $limite_por_pagina, $limite_por_pagina, true);
+
 echo "<div style='overflow-x: auto; max-height: 70vh; box-shadow: 0 0 5px rgba(0,0,0,0.1);'>";
 echo "<table class='tab_cadre_fixehov' style='margin: 0; min-width: 100%; width: max-content; table-layout: auto; border-collapse: separate; border-spacing: 0;'>";
 
@@ -299,13 +346,14 @@ foreach ($nomes_grupos as $g) echo "<th style='background-color: #0b5394; color:
 echo "</tr>";
 
 // Linhas de Dados
-foreach ($mapa_usuarios as $uid => $dados) {
+// Loop apenas na Página Atual
+foreach ($usuarios_pagina as $uid => $dados) {
     echo "<tr class='tab_bg_1'>";
     
     $cor_ativo = ($dados['ativo'] === 'Sim') ? 'color: #274e13; font-weight: bold; text-align: center;' : 'color: #990000; text-align: center;';
 
     // Travando as 4 primeiras colunas com os mesmos índices dos cabeçalhos e alinhamentos
-    echo "<td class='freeze-col' data-colindex='0' style='$cor_ativo' text-align: center;'>" . ($dados['ativo'] ?? 'Não') . "</td>";
+    echo "<td class='freeze-col' data-colindex='0' style='$cor_ativo'>" . ($dados['ativo'] ?? 'Não') . "</td>";
     echo "<td class='freeze-col' data-colindex='1' style='white-space: nowrap; text-align: left;'>" . ($dados['login'] ?? '') . "</td>";
     echo "<td class='freeze-col' data-colindex='2' style='white-space: nowrap; text-align: left;'>" . ($dados['firstname'] ?? '') . "</td>";
     echo "<td class='freeze-col freeze-shadow' data-colindex='3' style='white-space: nowrap; text-align: left;'>" . ($dados['realname'] ?? '') . "</td>";
@@ -327,8 +375,45 @@ echo "</table>";
 echo "</div>"; 
 echo "</div>";
 
+// Formulário Oculto para disparar a mudança de página via Javascript
+echo "<form id='form-paginacao' method='post' action='processa_matriz.php' style='display:none;'>";
+echo "<input type='hidden' name='_glpi_csrf_token' value='" . Session::getNewCSRFToken() . "'>";
+echo "<input type='hidden' name='gerar_matriz' value='1'>";
+echo "<input type='hidden' name='pagina' id='input_pagina' value='1'>";
+foreach ((array)$entidade_perfis as $id_perfil) {
+    echo "<input type='hidden' name='entities_id_profiles[]' value='" . htmlspecialchars($id_perfil, ENT_QUOTES) . "'>";
+}
+foreach ((array)$entidade_grupos as $id_grupo) {
+    echo "<input type='hidden' name='entities_id_groups[]' value='" . htmlspecialchars($id_grupo, ENT_QUOTES) . "'>";
+}
+echo "</form>";
+
 // --- SCRIPT DE CÁLCULO DINÂMICO E FILTROS ---
 echo "<script type='text/javascript'>
+// Função chamada pelos botões de página
+function irParaPagina(p) {
+    // Desabilita todos os botões e o campo de número para evitar duplo-clique / uso de token velho
+    $('.btn-paginacao').prop('disabled', true).css('cursor', 'not-allowed').css('opacity', '0.5');
+    $('input[type=number]').prop('disabled', true);
+    
+    // Preenche e envia o formulário com segurança
+    document.getElementById('input_pagina').value = p;
+    document.getElementById('form-paginacao').submit();
+}
+
+function pularParaPagina(valor, maximo) {
+    var p = parseInt(valor);
+    // Validações: se digitar texto, vazio ou menor que 1, vai para a página 1
+    if (isNaN(p) || p < 1) {
+        p = 1;
+    }
+    // Se digitar um número maior que o total de páginas, vai para a última
+    if (p > maximo) {
+        p = maximo;
+    }
+    irParaPagina(p);
+}
+
 $(document).ready(function() {
     
     // Função para recalcular posições 'left' das colunas fixas após qualquer mudança de layout (como esconder/mostrar colunas)

@@ -17,7 +17,7 @@ function plugin_init_matrizpermissoes() {
 function plugin_version_matrizpermissoes() {
     return [
         'name'           => 'Matriz de Permissões',
-        'version'        => '1.1.0',
+        'version'        => '1.1.1',
         'author'         => 'andrefelipeufcg',
         'license'        => 'GPLv2+',
         'homepage'       => 'https://github.com/andrefelipeufcg/matrizpermissoes',

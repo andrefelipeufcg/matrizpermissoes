@@ -187,7 +187,7 @@ if ($is_export) {
 // =========================================================
 // 6. MODO VISUALIZAÇÃO (Tela HTML do GLPI)
 // =========================================================
-Html::header('Matriz de Permissões', $_SERVER['PHP_SELF'], "tools", "PluginMatrizpermissoesMatriz");
+Html::header(__('Permissions Matrix', 'matrizpermissoes'), $_SERVER['PHP_SELF'], "tools", "PluginMatrizpermissoesMatriz");
 
 // --- ESTILOS CSS PARA TRAVAR AS COLUNAS E A LINHA DO TOPO ---
 echo "<style>

@@ -264,46 +264,6 @@ echo "<div style='display: flex; justify-content: space-between; align-items: ce
     echo "</div>";
 echo "</div>";
 
-// Controles de Paginação (Topo)
-if ($total_paginas > 1) {
-    // Cálculos para exibir a posição atual (Exibindo X - Y de Z usuários)
-    $inicio_exibicao = (($pagina_atual - 1) * $limite_por_pagina) + 1;
-    $fim_exibicao = min($pagina_atual * $limite_por_pagina, $total_usuarios);
-
-    echo "<div style='display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 15px; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd;'>";
-    
-    // Botões de navegação e página
-    echo "<div style='display: flex; justify-content: center; align-items: center; gap: 15px;'>";
-    if ($pagina_atual > 1) {
-        $prev = $pagina_atual - 1;
-        echo "<button onclick='irParaPagina(1)' class='btn-paginacao' style='background-color: #555;'><i class='fas fa-angle-double-left'></i></button>";
-        echo "<button onclick='irParaPagina($prev)' class='btn-paginacao' style='background-color: #1d5ea3;'><i class='fas fa-chevron-left'></i></button>";
-    }
-    
-    echo "<span style='font-size: 14px; color: #555;'>" . __('Page', 'matrizpermissoes') . " ";
-    echo "<input type='number' value='$pagina_atual' min='1' max='$total_paginas' style='width: 60px; text-align: center; padding: 3px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold;' onchange='pularParaPagina(this.value, $total_paginas)'> ";
-    echo __('of', 'matrizpermissoes') . " <b>$total_paginas</b></span>";    
-    
-    if ($pagina_atual < $total_paginas) {
-        $next = $pagina_atual + 1;
-        echo "<button onclick='irParaPagina($next)' class='btn-paginacao' style='background-color: #1d5ea3;'><i class='fas fa-chevron-right'></i></button>";
-        echo "<button onclick='irParaPagina($total_paginas)' class='btn-paginacao' style='background-color: #555;'><i class='fas fa-angle-double-right'></i></button>";
-    }
-    echo "</div>";
-
-    // Texto mostrando o intervalo de usuários atual
-    // Usando sprintf para injetar as variáveis no texto traduzido
-    $texto_exibindo = sprintf(
-        __('Showing %1$s - %2$s of %3$s users', 'matrizpermissoes'), 
-        "<b>$inicio_exibicao</b>", 
-        "<b>$fim_exibicao</b>", 
-        "<b>$total_usuarios</b>"
-    );
-    echo "<span style='font-size: 14px; color: #333;'>$texto_exibindo</span>";
-    
-    echo "</div>";
-}
-
 // --- PAINEL DE FILTROS DINÂMICOS ---
 echo "<div style='margin-bottom: 15px; padding: 15px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 4px;'>";
 
@@ -411,7 +371,48 @@ foreach ($usuarios_pagina as $uid => $dados) {
 
 echo "</table>";
 echo "</div>"; 
-echo "</div>";
+
+// Controles de Paginação
+if ($total_paginas > 1) {
+    // Cálculos para exibir a posição atual (Exibindo X - Y de Z usuários)
+    $inicio_exibicao = (($pagina_atual - 1) * $limite_por_pagina) + 1;
+    $fim_exibicao = min($pagina_atual * $limite_por_pagina, $total_usuarios);
+
+    echo "<div style='display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 15px; background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #ddd;'>";
+    
+    // Botões de navegação e página
+    echo "<div style='display: flex; justify-content: center; align-items: center; gap: 15px;'>";
+    if ($pagina_atual > 1) {
+        $prev = $pagina_atual - 1;
+        echo "<button onclick='irParaPagina(1)' class='btn-paginacao' style='background-color: #555;'><i class='fas fa-angle-double-left'></i></button>";
+        echo "<button onclick='irParaPagina($prev)' class='btn-paginacao' style='background-color: #1d5ea3;'><i class='fas fa-chevron-left'></i></button>";
+    }
+    
+    echo "<span style='font-size: 14px; color: #555;'>" . __('Page', 'matrizpermissoes') . " ";
+    echo "<input type='number' value='$pagina_atual' min='1' max='$total_paginas' style='width: 60px; text-align: center; padding: 3px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold;' onchange='pularParaPagina(this.value, $total_paginas)'> ";
+    echo __('of', 'matrizpermissoes') . " <b>$total_paginas</b></span>";    
+    
+    if ($pagina_atual < $total_paginas) {
+        $next = $pagina_atual + 1;
+        echo "<button onclick='irParaPagina($next)' class='btn-paginacao' style='background-color: #1d5ea3;'><i class='fas fa-chevron-right'></i></button>";
+        echo "<button onclick='irParaPagina($total_paginas)' class='btn-paginacao' style='background-color: #555;'><i class='fas fa-angle-double-right'></i></button>";
+    }
+    echo "</div>";
+
+    // Texto mostrando o intervalo de usuários atual
+    // Usando sprintf para injetar as variáveis no texto traduzido
+    $texto_exibindo = sprintf(
+        __('Showing %1$s - %2$s of %3$s users', 'matrizpermissoes'), 
+        "<b>$inicio_exibicao</b>", 
+        "<b>$fim_exibicao</b>", 
+        "<b>$total_usuarios</b>"
+    );
+    echo "<span style='font-size: 14px; color: #333;'>$texto_exibindo</span>";
+    
+    echo "</div>";
+}
+
+echo "</div>"; // FIM div principal
 
 // Formulário Oculto para disparar a mudança de página via Javascript
 echo "<form id='form-paginacao' method='post' action='processa_matriz.php' style='display:none;'>";

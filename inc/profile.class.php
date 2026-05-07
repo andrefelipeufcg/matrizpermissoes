@@ -4,7 +4,7 @@ if (!defined('GLPI_ROOT')) { die("Acesso negado"); }
 class PluginMatrizpermissoesProfile extends CommonGLPI {
 
     static function getTypeName($nb = 0) {
-        return 'Matriz de Permissões';
+        return __('Permissions Matrix', 'matrizpermissoes');
     }
 
     static function getIcon() {
@@ -39,21 +39,21 @@ class PluginMatrizpermissoesProfile extends CommonGLPI {
         echo Html::hidden('update_matriz_right', ['value' => 1]);
         
         echo "<div class='center'><table class='tab_cadre_fixehov'>";
-        echo "<tr class='tab_bg_1'><th colspan='2'>Configuração de Acesso ao Plugin</th></tr>";
+        echo "<tr class='tab_bg_1'><th colspan='2'>" . __('Plugin Access Configuration', 'matrizpermissoes') . "</th></tr>";
         echo "<tr class='tab_bg_2'>";
-        echo "<td class='center' style='width: 50%;'>Pode visualizar a matriz de permissões?</td>";
+        echo "<td class='center' style='width: 50%;'>" . __('Can view the permissions matrix?', 'matrizpermissoes') . "</td>";
         echo "<td class='center'>";
         echo "<label style='margin-right: 20px; cursor: pointer;'>";
-        echo "<input type='radio' name='matriz_read' value='1' " . ($current_right ? "checked" : "") . "> Sim";
+        echo "<input type='radio' name='matriz_read' value='1' " . ($current_right ? "checked" : "") . "> " . __('Yes', 'matrizpermissoes');
         echo "</label>";
         echo "<label style='cursor: pointer;'>";
-        echo "<input type='radio' name='matriz_read' value='0' " . (!$current_right ? "checked" : "") . "> Não";
+        echo "<input type='radio' name='matriz_read' value='0' " . (!$current_right ? "checked" : "") . "> " . __('No', 'matrizpermissoes');
         echo "</label>";
         echo "</td>";
         echo "</tr>";
         
         echo "<tr class='tab_bg_2'><td colspan='2' class='center'>";
-        echo Html::submit('Salvar', ['name' => 'update', 'class' => 'submit']);
+        echo Html::submit(__('Save', 'matrizpermissoes'), ['name' => 'update', 'class' => 'submit']);
         echo "</td></tr>";
         echo "</table></div>";
         Html::closeForm();

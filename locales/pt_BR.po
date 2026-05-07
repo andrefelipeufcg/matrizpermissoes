@@ -1,0 +1,131 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: andrefelipeufcg\n"
+"POT-Creation-Date: 2026-05-06 20:47-0300\n"
+"PO-Revision-Date: 2026-05-06 20:48-0300\n"
+"Last-Translator: \n"
+"Language-Team: andrefelipeufcg\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: front/matriz.php:11 front/processa_matriz.php:190 inc/matriz.class.php:19
+#: inc/matriz.class.php:26 inc/profile.class.php:7 setup.php:19
+msgid "Permissions Matrix"
+msgstr "Matriz de Permissões"
+
+#: front/matriz.php:18
+msgid "Permissions Matrix Generator"
+msgstr "Gerador da Matriz de Permisões"
+
+#: front/matriz.php:28
+msgid "1. Profiles Entity:"
+msgstr "1. Entidade dos Perfis:"
+
+#: front/matriz.php:41
+msgid "2. Groups Entity:"
+msgstr "2. Entidade dos Grupos:"
+
+#: front/matriz.php:53
+msgid "Generate Permissions Matrix"
+msgstr "Gerar Matriz de Permissões"
+
+#: front/processa_matriz.php:102 front/processa_matriz.php:351
+#: inc/profile.class.php:47
+msgid "Yes"
+msgstr "Sim"
+
+#: front/processa_matriz.php:102 front/processa_matriz.php:177
+#: front/processa_matriz.php:354 inc/profile.class.php:50
+msgid "No"
+msgstr "Não"
+
+#: front/processa_matriz.php:159 front/processa_matriz.php:337
+msgid "Active"
+msgstr "Ativo"
+
+#: front/processa_matriz.php:159 front/processa_matriz.php:338
+msgid "User"
+msgstr "Usuário"
+
+#: front/processa_matriz.php:159 front/processa_matriz.php:339
+msgid "First name"
+msgstr "Nome"
+
+#: front/processa_matriz.php:159 front/processa_matriz.php:340
+msgid "Last name"
+msgstr "Sobrenome"
+
+#: front/processa_matriz.php:241
+msgid "Total users found:"
+msgstr "Total de usuários encontrados:"
+
+#: front/processa_matriz.php:245
+msgid "Back to entities selection"
+msgstr "Voltar à seleção de entidades"
+
+#: front/processa_matriz.php:245
+msgid "Back"
+msgstr "Voltar"
+
+#: front/processa_matriz.php:262
+msgid "Download table in CSV format"
+msgstr "Fazer o download da tabela em formato CSV"
+
+#: front/processa_matriz.php:262
+msgid "Export to CSV"
+msgstr "Exportar para CSV"
+
+#: front/processa_matriz.php:272
+msgid "Hide/Show Columns (Visual Filter)"
+msgstr "Ocultar/Mostrar Colunas (Filtro Visual)"
+
+#: front/processa_matriz.php:284
+msgid "Profiles:"
+msgstr "Perfis:"
+
+#: front/processa_matriz.php:286 front/processa_matriz.php:305
+msgid "Check all"
+msgstr "Marcar Todos"
+
+#: front/processa_matriz.php:287 front/processa_matriz.php:306
+msgid "Uncheck all"
+msgstr "Desmarcar Todos"
+
+#: front/processa_matriz.php:303
+msgid "Groups:"
+msgstr "Grupos"
+
+#: front/processa_matriz.php:391
+msgid "Page"
+msgstr "Página"
+
+#: front/processa_matriz.php:393
+msgid "of"
+msgstr "de"
+
+#: front/processa_matriz.php:405
+#, php-format
+msgid "Showing %1$s - %2$s of %3$s users"
+msgstr "Exibindo %1$s - %2$s de %3$s usuários"
+
+#: inc/profile.class.php:42
+msgid "Plugin Access Configuration"
+msgstr "Configuração de Acesso ao Plugin"
+
+#: inc/profile.class.php:44
+msgid "Can view the permissions matrix?"
+msgstr "Pode visualizar a matriz de permissões?"
+
+#: inc/profile.class.php:56
+msgid "Save"
+msgstr "Salvar"
+
+#: setup.php:33
+msgid "This plugin requires GLPI 10.0.0 or higher."
+msgstr "Este plugin requer o GLPI 10.0.0 ou superior."

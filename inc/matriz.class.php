@@ -16,14 +16,14 @@ class PluginMatrizpermissoesMatriz extends CommonGLPI {
      * Define o nome que vai aparecer no menu do GLPI
      */
     static function getMenuName() {
-        return "Matriz de Permissões";
+        return __('Permissions Matrix', 'matrizpermissoes');
     }
 
     /**
      * Define o nome interno do tipo (padrão do framework)
      */
     static function getTypeName($nb = 0) {
-        return "Matriz de Permissões";
+        return __('Permissions Matrix', 'matrizpermissoes');
     }
 
     /**

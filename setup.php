@@ -16,8 +16,8 @@ function plugin_init_matrizpermissoes() {
  */
 function plugin_version_matrizpermissoes() {
     return [
-        'name'           => 'Matriz de Permissões',
-        'version'        => '1.1.1',
+        'name'           => __('Permissions Matrix', 'matrizpermissoes'),
+        'version'        => '1.1.2',
         'author'         => 'andrefelipeufcg',
         'license'        => 'GPLv2+',
         'homepage'       => 'https://github.com/andrefelipeufcg/matrizpermissoes',
@@ -30,7 +30,7 @@ function plugin_version_matrizpermissoes() {
  */
 function plugin_matrizpermissoes_check_prerequisites() {
     if (version_compare(GLPI_VERSION, '10.0.0', '<')) {
-        echo "Este plugin requer o GLPI 10.0.0 ou superior.";
+        echo __("This plugin requires GLPI 10.0.0 or higher.", "matrizpermissoes");
         return false;
     }
     return true;

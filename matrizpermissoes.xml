@@ -1,0 +1,77 @@
+<root>
+    <name>Permissions Matrix</name>
+    <key>matrizpermissoes</key>
+    <state>stable</state>
+    
+    <logo>https://raw.githubusercontent.com/andrefelipeufcg/matrizpermissoes/main/logo.png</logo>
+    
+    <description>
+        <short>
+            <en>GLPI Plugin for generating and exporting a visual user permissions matrix (Profiles x Groups).</en>
+            <pt_BR>Plugin GLPI para geração e exportação de matriz visual de permissões de usuários (Perfis x Grupos).</pt_BR>
+            <fr_FR>Plugin GLPI pour la génération et l'exportation d'une matrice visuelle des permissions des utilisateurs (Profils x Groupes).</fr_FR>
+        </short>
+        <long>
+            <en>This plugin generates a dynamic and visual matrix crossing users, profiles, and groups within GLPI. It allows dynamic column filtering and provides an export to CSV feature for auditing purposes.</en>
+            <pt_BR>Este plugin gera uma matriz dinâmica e visual cruzando usuários, perfis e grupos no GLPI. Permite o filtro dinâmico de colunas e fornece exportação para CSV para fins de auditoria.</pt_BR>
+            <fr_FR>Ce plugin génère une matrice dynamique et visuelle croisant les utilisateurs, les profils et les groupes dans GLPI. Il permet un filtrage dynamique des colonnes et fournit une exportation en CSV pour les audits.</fr_FR>
+        </long>
+    </description>
+    
+    <homepage>https://github.com/andrefelipeufcg/matrizpermissoes</homepage>
+    <download>https://github.com/andrefelipeufcg/matrizpermissoes/releases</download>
+    <issues>https://github.com/andrefelipeufcg/matrizpermissoes/issues</issues>
+    <readme>https://raw.githubusercontent.com/andrefelipeufcg/matrizpermissoes/main/README.md</readme>
+    <changelog>https://github.com/andrefelipeufcg/matrizpermissoes/releases</changelog>
+    
+    <authors>
+        <author>andrefelipeufcg</author>
+    </authors>
+    
+    <versions>
+        <version>
+            <num>1.1.2</num> 
+            <compatibility>>=10.0.0</compatibility> 
+            <download_url>https://github.com/andrefelipeufcg/matrizpermissoes/archive/refs/tags/v1.1.2.zip</download_url>
+        </version>
+    </versions>
+    
+    <langs>
+        <lang>pt_BR</lang>
+        <lang>fr_FR</lang>
+    </langs>
+    
+    <license>GPLv2+</license>
+    
+    <tags>
+        <en>
+            <tag>permissions</tag>
+            <tag>matrix</tag>
+            <tag>export</tag>
+            <tag>users</tag>
+			<tag>profiles</tag>
+			<tag>groups</tag>
+        </en>
+        <pt_BR>
+            <tag>permissoes</tag>
+            <tag>matriz</tag>
+            <tag>exportacao</tag>
+            <tag>usuarios</tag>
+			<tag>perfis</tag>
+			<tag>grupos</tag>
+        </pt_BR>
+        <fr_FR>
+            <tag>permissions</tag>
+            <tag>matrice</tag>
+            <tag>exportation</tag>
+            <tag>utilisateurs</tag>
+			<tag>profils</tag>
+			<tag>groupes</tag>
+        </fr_FR>
+    </tags>
+    
+    <screenshots>
+        <screenshot>https://raw.githubusercontent.com/andrefelipeufcg/matrizpermissoes/main/screenshot1.png</screenshot>
+        <screenshot>https://raw.githubusercontent.com/andrefelipeufcg/matrizpermissoes/main/screenshot2.png</screenshot>
+    </screenshots>
+</root>
